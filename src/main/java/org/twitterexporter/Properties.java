@@ -16,9 +16,14 @@ public class Properties {
     @Value("${bearer-token}")
     private String bearerToken;
 
+    @Getter @Setter
+    @Value("${filepath}")
+    private String filepath;
+    
     @Setter
     @Value("${usernames}")
     private String usernames;
 
     public List<String> getUsernames() {return Arrays.asList(usernames.split(","));}
+
 }
