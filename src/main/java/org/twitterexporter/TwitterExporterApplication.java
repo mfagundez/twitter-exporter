@@ -1,5 +1,7 @@
 package org.twitterexporter;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.twitter.clientlib.ApiException;
+import com.github.opendevl.JFlat;
 import com.twitter.clientlib.TwitterCredentialsBearer;
 import com.twitter.clientlib.api.TwitterApi;
 import com.twitter.clientlib.model.Get2UsersIdTweetsResponse;
@@ -50,13 +52,21 @@ public class TwitterExporterApplication {
 					List<Tweet> tweets = tweetsResponse.getData();
 					if (tweets != null) {
 						// Log each tweet text
-						tweets.forEach(tweet -> log.info(tweet.toJson()));
+						tweets.forEach(tweet -> {
+							log.info(tweet.toJson());
+							JFlat flatMe = new JFlat(tweet.toJson());
+							try {
+								flatMe.json2Sheet().write2csv(properties.getFilepath() + username + ".csv");
+							} catch (FileNotFoundException | UnsupportedEncodingException e) {
+								log.error("An error took place with file: '{0}'.", e.getLocalizedMessage());
+							}
+						});
 					}
 				} else {
 					log.error("Username '{0}' not found. Unable to retrieve data from this user.", username);
 				}
 			}
-		} catch (ApiException e) {
+		} catch (Exception e) {
 			log.error("An error took place: '{0}'.", e.getLocalizedMessage());
 		}
 	}
