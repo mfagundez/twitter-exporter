@@ -12,5 +12,19 @@ Fill values in application.properties file with:
 java -jar twitter-exporter.jar
 
 # output
-All tweets from all provided usernames will be logged.
+A file for each given user with tweets that match with datetime filter criteria (if any).
 
+Each file row represents one tweet with following information:
+
+* tweetId.
+* creationDate. yyyy-mm-ddTdd:MM:ssZ format.
+* conversationId.
+* editsRemaining.
+* language.
+* possiblySensitive.
+* likeCount.
+* quoteCount.
+* replyCount.
+* retweetCount.
+* replySettings.
+* text. (Note: just 140 characters are provided by Twitter API)
