@@ -19,7 +19,15 @@ public class Properties {
     @Getter @Setter
     @Value("${filepath}")
     private String filepath;
+
+    @Getter @Setter
+    @Value("${startDatetime}")
+    private String startDatetime;
     
+    @Getter @Setter
+    @Value("${endDatetime}")
+    private String endDatetime;
+
     @Setter
     @Value("${usernames}")
     private String usernames;
