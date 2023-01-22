@@ -10,7 +10,7 @@ Fill values in application.properties file with:
 * endDatetime: (opt) End date to extract tweets (Must be defined if start date is defined). yyyy-mm-ddThh:MM:ss
 
 ```bash
-java -jar twitter-exporter.jar
+java -jar twitter-exporter-x.x.x.jar
 ```
 
 # output
