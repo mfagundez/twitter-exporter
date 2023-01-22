@@ -14,7 +14,7 @@ java -jar twitter-exporter.jar
 ```
 
 # output
-A file for each given user with tweets that match with datetime filter criteria (if any).
+A csv file for each given user with tweets that match with datetime filter criteria (if any).
 
 Each file row represents one tweet with following information:
 
