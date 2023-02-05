@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,17 +46,46 @@ public class TwitterExporterApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TwitterExporterApplication.class, args);
+		String bearerToken;
+		String startDatetimeStr = null;
+		String endDatetimeStr = null;
+		String usernamesStr;
+		String filePath;
 
-		// Create api client using bearer token from properties file
-		TwitterApi twitterApi = new TwitterApi(new TwitterCredentialsBearer(properties.getBearerToken()));
+
+		// Load arguments values from command line (if any)
+		if (args.length >= 3) {
+			if ((args.length != 3) && (args.length != 5)) {
+				log.error("Please review provided arguments");
+				throw new IllegalArgumentException();
+			}
+			bearerToken = args[0];
+			filePath = args[1];
+			usernamesStr = args[2];
+			if (args.length == 5) {
+				startDatetimeStr = args[3];
+				endDatetimeStr = args[4];
+			}
+		} else {
+			// otherwise, load values from application properties file.
+			bearerToken = properties.getBearerToken();
+			filePath = properties.getFilepath();
+			usernamesStr = properties.getUsernames();
+			startDatetimeStr = properties.getStartDatetime();
+			endDatetimeStr = properties.getEndDatetime();
+		}
+
+		List<String> usernames = Arrays.asList(usernamesStr.split(","));
+		// Create api client using bearer loaded token
+		TwitterApi twitterApi = new TwitterApi(new TwitterCredentialsBearer(bearerToken));
 
 		OffsetDateTime startDatetime = null;
 		OffsetDateTime endDatetime = null;
 
 		// Parsing start and end date if defined (none or both must be defined)
-		if ((properties.getStartDatetime() != null) && (!properties.getStartDatetime().isBlank()) && (properties.getEndDatetime() != null) && (!properties.getEndDatetime().isBlank())) {
-			startDatetime = LocalDateTime.parse(properties.getStartDatetime(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.systemDefault()).toOffsetDateTime();
-			endDatetime = LocalDateTime.parse(properties.getEndDatetime(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+		if ((startDatetimeStr != null) && (!startDatetimeStr.isBlank()) && (endDatetimeStr != null) && (!endDatetimeStr.isBlank())) {
+			startDatetime = LocalDateTime.parse(startDatetimeStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+			endDatetime = LocalDateTime.parse(endDatetimeStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.systemDefault()).toOffsetDateTime();
 
 			// Start date (if defined) must be earlier than end date
 			if (!startDatetime.isBefore(endDatetime)){
@@ -65,14 +95,14 @@ public class TwitterExporterApplication {
 		}
 
 		// Each user has its own file
-		for(String username : properties.getUsernames()) {
+		for(String username : usernames) {
 			try {
 				// Get user ID from each username
 				User userData = twitterApi.users().findUserByUsername(username).execute().getData();
 				if (userData != null) {
 					String userId = userData.getId();
 					// Generating file using username as filename
-					try (CSVWriter writer = new CSVWriter(new FileWriter(properties.getFilepath() + username + EXPORT_FILE_EXTENSION))){
+					try (CSVWriter writer = new CSVWriter(new FileWriter(filePath + username + EXPORT_FILE_EXTENSION))){
 						// header row
 						writer.writeNext(new String[]{"tweetId", "creationDate", "conversationId", "editsRemaining", "language", "possiblySensitive", 
 						"likeCount", "quoteCount", "replyCount", "retweetCount", "replySettings", "text"});
