@@ -9,14 +9,14 @@ Fill the following values:
 * startDatetime: (opt) Start date to extract tweets (Must be defined if end date is defined). yyyy-mm-ddThh:MM:ss
 * endDatetime: (opt) End date to extract tweets (Must be defined if start date is defined). yyyy-mm-ddThh:MM:ss
 
-You can choose how to provide argument values:
+You can choose how to provide argument values (ordered by priority):
 
-a) Command-line Arguments (argument order is important)
+1. Command-line Arguments (argument order is important)
 ```bash
 java -jar twitter-exporter-x.x.x.jar bearerToken filePath usernames [startDatetime] [endDatetime]
 ```
 
-b) application.properties file:
+2. application.properties file:
 
 ```bash
 java -jar twitter-exporter-x.x.x.jar
