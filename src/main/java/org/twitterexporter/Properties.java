@@ -1,8 +1,5 @@
 package org.twitterexporter;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +25,8 @@ public class Properties {
     @Value("${endDatetime}")
     private String endDatetime;
 
-    @Setter
+    @Getter @Setter
     @Value("${usernames}")
     private String usernames;
-
-    public List<String> getUsernames() {return Arrays.asList(usernames.split(","));}
 
 }
